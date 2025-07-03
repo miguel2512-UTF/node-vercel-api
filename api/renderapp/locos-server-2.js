@@ -12,7 +12,12 @@ function waitRenderAppInit(status_url) {
 }
 
 export default async function handler(req, res) {
-  const status = await waitRenderAppInit("https://minecraft-skin-changer.onrender.com/server/administration/schedule/check/status/")
+  const status_url = "https://minecraft-skin-changer.onrender.com/server/administration/schedule/check/status/"
+  let status = await fetch(status_url).then(res => res.text())
 
-  res.status(200).send(status)
+  if (status != "True" && status != "False") {
+    status = await waitRenderAppInit(status_url)
+  }
+
+  return res.status(200).send(status)
 }
