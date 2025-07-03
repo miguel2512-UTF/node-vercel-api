@@ -1,21 +1,18 @@
 function waitRenderAppInit(status_url) {
   return new Promise(resolve => {
     const interval = setInterval(async () => {
-      try {
-        const res = await fetch(status_url).then(res => res.json())
-        if (res.status) {
-          resolve()
-          clearInterval(interval)
-        }
-      } catch (error) {
-        console.log("Waiting render app");
+      const res = await fetch(status_url).then(res => res.text())
+      if (res == "True" || res == "False") {
+        resolve(res)
+        clearInterval(interval)
       }
+      console.log("Waiting render app");
     }, 5000)
   })
 }
 
 export default async function handler(req, res) {
-    await waitRenderAppInit("https://minecraft-skin-changer.onrender.com/status")
+  const status = await waitRenderAppInit("https://minecraft-skin-changer.onrender.com/server/administration/schedule/check/status/")
 
-    res.status(200).send("True")
+  res.status(200).send(status)
 }
